@@ -1,8 +1,10 @@
 package moonga.springbootdeveloper.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import moonga.springbootdeveloper.domain.Article;
 import moonga.springbootdeveloper.dto.AddArticleRequest;
+import moonga.springbootdeveloper.dto.UpdateArticleRequest;
 import moonga.springbootdeveloper.repository.BlogRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,4 +24,23 @@ public class BlogServie {
     public List<Article> findAll() {
         return blogRepository.findAll();
     }
+
+    public Article findById(long id) {
+        return blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found:" + id));
+    }
+
+    public void delete(long id) {
+        blogRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Article update(long id, UpdateArticleRequest request) {
+        Article article = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found:" + id));
+
+        article.update(request.getTitle(), request.getContent());
+        return article;
+    }
+
 }
